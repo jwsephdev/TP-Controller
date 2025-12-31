@@ -21,17 +21,21 @@ height = 1.2
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kpjcp"]
 
 [node name="Player" type="CharacterBody3D"]
+collision_layer = 2
 script = ExtResource("1_gntrk")
+mount_pos_crouch = Vector3(0.4, -0.5, 0)
+springlength_stand = 4.0
+mount_pos_stand = Vector3(0.2, 0.5, 0)
 
 [node name="playerVisuals" type="Node3D" parent="."]
 
 [node name="player_standingMesh" type="MeshInstance3D" parent="playerVisuals"]
+visible = false
 mesh = SubResource("CapsuleMesh_xhfnw")
 skeleton = NodePath("../..")
 
 [node name="player_crouchingMesh" type="MeshInstance3D" parent="playerVisuals"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.40050423, 0)
-visible = false
 mesh = SubResource("CapsuleMesh_kyqiw")
 
 [node name="cameraMount" type="Node3D" parent="."]
@@ -39,7 +43,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 
 [node name="cameraSpringarm" type="SpringArm3D" parent="cameraMount"]
 spring_length = 5.0
-margin = 1.0
+margin = 0.02
 
 [node name="camera" type="Camera3D" parent="cameraMount/cameraSpringarm"]
 
