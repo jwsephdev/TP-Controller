@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://bnotw25mwc418"]
+[gd_scene load_steps=11 format=3 uid="uid://bnotw25mwc418"]
 
 [ext_resource type="Texture2D" uid="uid://cks0mi5cia206" path="res://Textures/prototextures/gray.png" id="1_8od7v"]
 [ext_resource type="PackedScene" uid="uid://b8ex7hh6o24ci" path="res://Scenes/Player.tscn" id="2_8uh7m"]
+[ext_resource type="Texture2D" uid="uid://7nmjfgpsyhoq" path="res://Textures/prototextures/orange.png" id="3_qc4db"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8uh7m"]
 albedo_texture = ExtResource("1_8od7v")
@@ -27,6 +28,10 @@ sky = SubResource("Sky_8uh7m")
 tonemap_mode = 2
 glow_enabled = true
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ys1qc"]
+albedo_texture = ExtResource("3_qc4db")
+uv1_triplanar = true
+
 [node name="Test" type="Node3D"]
 
 [node name="Floor" type="MeshInstance3D" parent="."]
@@ -48,3 +53,9 @@ environment = SubResource("Environment_6uqi0")
 
 [node name="Player" parent="." instance=ExtResource("2_8uh7m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.171843, 0)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2654724, 1.6245973, -11.688759)
+use_collision = true
+size = Vector3(5.83844, 0.5107422, 6.5168457)
+material = SubResource("StandardMaterial3D_ys1qc")
