@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://b8ex7hh6o24ci"]
+[gd_scene load_steps=6 format=3 uid="uid://b8ex7hh6o24ci"]
 
 [ext_resource type="Script" uid="uid://fnimod1txx50" path="res://Scripts/player.gd" id="1_gntrk"]
 
@@ -8,15 +8,8 @@ albedo_color = Color(1, 0, 0, 1)
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_xhfnw"]
 material = SubResource("StandardMaterial3D_0rwas")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rpqav"]
-albedo_color = Color(1, 0, 0, 1)
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_kyqiw"]
-material = SubResource("StandardMaterial3D_rpqav")
-height = 1.2
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_rpqav"]
-height = 1.2
+[sub_resource type="BoxMesh" id="BoxMesh_rpqav"]
+size = Vector3(0.2, 0.22, 1)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kpjcp"]
 
@@ -26,14 +19,13 @@ script = ExtResource("1_gntrk")
 
 [node name="playerVisuals" type="Node3D" parent="."]
 
-[node name="player_standingMesh" type="MeshInstance3D" parent="playerVisuals"]
+[node name="player_mesh" type="MeshInstance3D" parent="playerVisuals"]
 mesh = SubResource("CapsuleMesh_xhfnw")
 skeleton = NodePath("../..")
 
-[node name="player_crouchingMesh" type="MeshInstance3D" parent="playerVisuals"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.40050423, 0)
-visible = false
-mesh = SubResource("CapsuleMesh_kyqiw")
+[node name="direction_mesh" type="MeshInstance3D" parent="playerVisuals/player_mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.21405256, -0.6092458)
+mesh = SubResource("BoxMesh_rpqav")
 
 [node name="cameraMount" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
@@ -44,12 +36,7 @@ margin = 0.02
 
 [node name="camera" type="Camera3D" parent="cameraMount/cameraSpringarm"]
 
-[node name="player_crouchingCol" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.40284178, 0)
-visible = false
-shape = SubResource("CapsuleShape3D_rpqav")
-
-[node name="player_standingCol" type="CollisionShape3D" parent="."]
+[node name="player_col" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_kpjcp")
 
 [node name="uncrouch_checker" type="RayCast3D" parent="."]

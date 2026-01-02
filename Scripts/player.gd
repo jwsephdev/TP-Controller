@@ -1,14 +1,5 @@
 class_name Player extends CharacterBody3D
 
-
-# remove having multiple collision shapes and just change the shape of 1 coll shape 
-#
-# var shape = CylinderShape.new()
-# shape.set_radius(new_radius)
-# shape.set_height(new_height)
-# $Spatial/CollisionShape.shape = shape
-
-
 @export_category("Movement")
 @export var standspeed :float  = 8.0
 @export var crouchspeed :float = 4.0
@@ -24,12 +15,12 @@ class_name Player extends CharacterBody3D
 @export var cam_transp_mindis:float = 1.8
 
 @export_subgroup("Crouching")
-@export var cam_pos_crouch :Vector3= Vector3(0.4,-0.5,0)
+@export var cam_pos_crouch :Vector3= Vector3(0.4,-0.1,0)
 @export var cam_dist_crouch :float= 2.0
 
 @export_subgroup("Standing")
 @export var cam_pos_stand :Vector3= Vector3(0.15,0.2,0)
-@export var cam_dist_stand :float= 4.0
+@export var cam_dist_stand :float= 3.5
 
 var playerSpeed :float
 var direction = Vector3.ZERO
@@ -43,10 +34,9 @@ const JUMP_VELOCITY :float= 4.5
 @onready var camera: Camera3D = $cameraMount/cameraSpringarm/camera
 @onready var camera_springarm: SpringArm3D = $cameraMount/cameraSpringarm
 
-@onready var player_standing_mesh: MeshInstance3D = $playerVisuals/player_standingMesh
-@onready var player_crouching_mesh: MeshInstance3D = $playerVisuals/player_crouchingMesh
-@onready var player_crouching_col: CollisionShape3D = $player_crouchingCol
-@onready var player_standing_col: CollisionShape3D = $player_standingCol
+@onready var player_mesh: MeshInstance3D = $playerVisuals/player_mesh
+@onready var player_col: CollisionShape3D = $player_col
+
 @onready var uncrouch_checker: RayCast3D = $uncrouch_checker
 
 
@@ -59,37 +49,34 @@ func camera_controls(event):
 
 func player_cam_transparency(delta):
 	if snapped(camera_springarm.get_hit_length(),0.01) <= cam_transp_mindis:
-		
-		player_crouching_mesh.transparency = lerp(player_crouching_mesh.transparency,cam_transp_amount,delta*lerp_speed)
-		player_standing_mesh.transparency = lerp(player_standing_mesh.transparency,cam_transp_amount,delta*lerp_speed)
+		player_mesh.transparency = lerp(player_mesh.transparency,cam_transp_amount,delta*lerp_speed)
 	else:
-		player_crouching_mesh.transparency = lerp(player_crouching_mesh.transparency,0.0,delta*lerp_speed)
-		player_standing_mesh.transparency = lerp(player_standing_mesh.transparency,0.0,delta*lerp_speed)
+		player_mesh.transparency = lerp(player_mesh.transparency,0.0,delta*lerp_speed)
 	
 func crouching(delta):
 	if is_crouching:
 		if is_on_floor():
 			playerSpeed = crouchspeed
-		
+	
+		#camera transition to Crouching
 		camera_mount.position = lerp(camera_mount.position, cam_pos_crouch, delta*lerp_speed)
 		camera_springarm.spring_length = lerp(camera_springarm.spring_length, cam_dist_crouch, delta*lerp_speed)
 		
-		player_crouching_col.disabled = false
-		player_standing_col.disabled = true
+		#Mesh and Coll shape transition to Crouching
+		if player_col.shape.height != 1.2:
+			player_col.shape.height = lerp(player_col.shape.height,1.2, delta*15.0)
+			player_mesh.mesh.height = lerp(player_mesh.mesh.height,1.2, delta*15.0)
 		
-		player_crouching_mesh.show()
-		player_standing_mesh.hide()
 	else:
 		playerSpeed = standspeed
-		
+		#camera transition to Standing
 		camera_mount.position = lerp(camera_mount.position, cam_pos_stand, delta*lerp_speed)
 		camera_springarm.spring_length = lerp(camera_springarm.spring_length, cam_dist_stand, delta*lerp_speed)
-		player_crouching_col.disabled = true
-		player_standing_col.disabled = false
+		#Mesh and Coll shape transition to Standing
+		if player_col.shape.height != 2.0:
+			player_col.shape.height = lerp(player_col.shape.height,2.0, delta*10.0)
+			player_mesh.mesh.height = lerp(player_mesh.mesh.height,2.0, delta*10.0)
 		
-		player_crouching_mesh.hide()
-		player_standing_mesh.show()
-	
 	if Input.is_action_pressed("Crouch"):
 		is_crouching = true
 	
@@ -123,7 +110,7 @@ func _physics_process(delta: float) -> void:
 	
 	direction = lerp(direction,(transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized(),delta*lerp_speed)
 	if movement:
-		visuals.look_at(position + movement)
+		visuals.look_at(position + direction)
 	if is_on_floor():	
 		if direction:
 			velocity.x = direction.x * playerSpeed
